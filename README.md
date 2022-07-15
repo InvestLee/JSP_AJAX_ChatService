@@ -7,6 +7,7 @@
 - AJAX
 - HTML/CSS/Javascript
 - MySQL
+- Bootstrap
 
 [영상에 없는 기능]
 - 회원가입 시 중복되는 id일 경우 회원가입 실패 처리
