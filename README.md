@@ -2,6 +2,7 @@
 동빈나님의 JSP AJAX 유튜브 강의를 바탕으로 한 채팅 서비스 개발 (영상에 없는 기능 추가 및 수정)
 
 [사용 기술]
+- Java
 - JSP
 - AJAX
 - HTML/CSS/Javascript
