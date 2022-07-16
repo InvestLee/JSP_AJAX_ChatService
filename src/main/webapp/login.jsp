@@ -10,36 +10,6 @@
 	<title>JSP AJAX로 만든 이지형 채팅 서비스</title>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
-	<script type="text/javascript">
-		function registerCheckFunction(){
-			var userID = $('#userID').val(); //HTML에서 userID의 값 가져오기
-			//AJAX를 이용한 비동기 통신
-			$.ajax({
-					type: 'POST',
-					url: './UserRegisterCheckServlet',
-					data: {userID: userID}, //{속성명: 값}
-					success: function(result){
-						if(result == 1){
-							$('#checkMessage').html('사용할 수 있는 아이디입니다.');
-							$('#checkType').attr('class', 'modal-content panel-success'); //속성변경 (변경전, 변경후)
-						} else {
-							$('#checkMessage').html('사용할 수 없는 아이디입니다.');
-							$('#checkType').attr('class', 'modal-content panel-warning'); //속성변경 (변경전, 변경후)
-						}
-						$('#checkModal').modal("show"); //부트스트랩 modal이 눈에 보이도록 함
-					}
-			});
-		}
-		function passwordCheckFunction(){
-			var userPassword1 = $('#userPassword1').val();
-			var userPassword2 = $('#userPassword2').val();
-			if(userPassword1 != userPassword2){
-				$('#passwordCheckMessage').html('비밀번호가 서로 일치하지 않습니다.');
-			}else{
-				$('#passwordCheckMessage').html('');
-			}
-		}
-	</script>
 </head>
 <body>
 	<!-- 세션 작업 -->
@@ -91,59 +61,25 @@
 		</div>
 	</nav>
 	<div class="container">
-		<!-- post방식은 데이터를 송신한 때 데이터가 실제로 드러나지 않도록 하여 기본적인 보안 유지 -->
-		<form method="post" action="./userRegister">
-			<table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #ddddd">
+		<form method="post" action="./userLogin">
+			<!-- 부트스트랩 템플릿 이용 -->
+			<table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
 				<thead>
 					<tr>
-						<th colspan="3"><h4>회원 가입 양식</h4></th>
+						<th colspan="2"><h4>로그인 페이지</h4></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td style="width: 110px;"><h5>아이디</h5></td>
-						<td><input class="form-control" type="text" id="userID" name="userID" maxlength="20" placeholder="아이디를 입력하세요."></td>
-						<td style="width: 110px;"><button class="btn btn-primary" onclick="registerCheckFunction();" type="button">중복체크</button></td>
+						<td><input class="form-control" type="text" name="userID" maxlength="20" placeholder="아이디를 입력하세요."></td>
 					</tr>
 					<tr>
 						<td style="width: 110px;"><h5>비밀번호</h5></td>
-						<!-- onkeyup : 어떠한 메시지를 입력할 때 마다 실행, 이를 이용해 비밀번호 확인 기능 구현 -->
-						<td colspan="2"><input onkeyup="passwordCheckFunction();" class="form-control" id="userPassword1" type="password" name="userPassword1" maxlength="20" placeholder="비밀번호를 입력하세요."></td>
+						<td><input class="form-control" type="password" name="userPassword" maxlength="20" placeholder="비밀번호를 입력하세요."></td>
 					</tr>
 					<tr>
-						<td style="width: 110px;"><h5>비밀번호 확인</h5></td>
-						<td colspan="2"><input onkeyup="passwordCheckFunction();" class="form-control" id="userPassword2" type="password" name="userPassword2" maxlength="20" placeholder="비밀번호 확인을 입력하세요."></td>
-					</tr>
-					<tr>
-						<td style="width: 110px;"><h5>이름</h5></td>
-						<td colspan="2"><input class="form-control" id="userName" type="text" name="userName" maxlength="20" placeholder="이름을 입력하세요."></td>
-					</tr>
-					<tr>
-						<td style="width: 110px;"><h5>나이</h5></td>
-						<td colspan="2"><input class="form-control" id="userAge" type="number" name="userAge" maxlength="20" placeholder="나이를 입력하세요."></td>
-					</tr>
-					<tr>
-						<td style="width: 110px;"><h5>성별</h5></td>
-						<td colspan="2">
-							<div class="form-group" style="text-align: center; margin:0 auto;">
-								<div class="btn-group" data-toggle="buttons">
-									<label class="btn btn-primary active">
-										<input type="radio" name="userGender" autocomplete="off" value="남자" checked>남자
-									</label>
-									<label class="btn btn-primary">
-										<input type="radio" name="userGender" autocomplete="off" value="여자">여자
-									</label>
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 110px;"><h5>이메일</h5></td>
-						<!-- HTML5에 의해서 type="email"을 통해 이메일 형식만 통과 -->
-						<td colspan="2"><input class="form-control" id="userEmail" type="email" name="userEmail" maxlength="20" placeholder="이메일을 입력하세요."></td>
-					</tr>
-					<tr>
-						<td style="text-align: left;" colspan="3"><h5 style="color: red;" id="passwordCheckMessage"></h5><input class="btn btn-primary pull-right" type="submit" value="등록"></td>
+						<td style="text-align: left;" colspan="2"><input class="btn btn-primary pull-right" type="submit" value="로그인"></td>
 					</tr>
 				</tbody>
 			</table>
