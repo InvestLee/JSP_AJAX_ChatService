@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.net.URLDecoder" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,6 +22,12 @@
 		if (toID == null) {
 			session.setAttribute("messageType", "오류 메시지");
 			session.setAttribute("messageContent", "대화 상대가 지정되지 않았습니다.");
+			response.sendRedirect("index.jsp");
+			return;
+		}
+		if (userID.equals(URLDecoder.decode(toID, "UTF-8"))) {
+			session.setAttribute("messageType", "오류 메시지");
+			session.setAttribute("messageContent", "자기 자신은 대화상대로 지정할 수 없습니다.");
 			response.sendRedirect("index.jsp");
 			return;
 		}
@@ -55,6 +61,7 @@
 				success: function(result) {
 					if(result == 1){
 						autoClosingAlert('#successMessage', 2000);
+						chatListFunction('0'); //전송 성공 시 즉시 갱신
 					} else if(result == 0) {
 						autoClosingAlert('#dangerMessage', 2000);
 					} else {
@@ -81,6 +88,9 @@
 					var parsed = JSON.parse(data);
 					var result = parsed.result;
 					for(var i = 0; i < result.length; i++) {
+						if(result[i][0].value == fromID){
+							result[i][0].value += '(Me)';
+						}
 						addChat(result[i][0].value, result[i][2].value, result[i][3].value);
 					}
 					lastID = Number(parsed.last); //마지막 대화의 ID
@@ -110,10 +120,34 @@
 					'<hr>');
 			$('#chatList').scrollTop($('#chatList')[0].scrollHeight); //chatList의 스크롤을 가장 아래쪽으로 내려줌으로써 메시지 올때마다 확인 가능
 		}
+		function getUnread(){
+			$.ajax({
+				type: 'POST',
+				url: './chatUnread',
+				data: {
+					userID: encodeURIComponent('<%= userID %>'),
+				}, //{속성명: 값}
+				success: function(result){
+					if(result >= 1){
+						showUnread(result);
+					} else {
+						showUnread('');
+					}
+				}
+			});
+		}
 		function getInfiniteChat() {
 			setInterval(function() {
-				chatListFunction(lastID); //chatListFunction이 3초에 한번 씩 계속 실행될 수 있도록 하는 기능
-			}, 3000);
+				chatListFunction(lastID); //chatListFunction이 1초에 한번 씩 계속 실행될 수 있도록 하는 기능
+			}, 1000);
+		}
+		function getInfiniteUnread() {
+			setInterval(function() {
+				getUnread(); 
+			}, 4000);
+		}
+		function showUnread(result){
+			$('#unread').html(result); //unread라는 id값을 가지는 원소에 매개변수 result를 넣음
 		}
 	</script>
 </head>
@@ -131,7 +165,9 @@
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="index.jsp">메인</a>
+				<li><a href="index.jsp">메인</a>
+				<li><a href="find.jsp">이용자 찾기</a></li>
+				<li><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li> <!-- 라벨을 통해 안읽은 메시지 수 표시 -->
 			</ul>
 			<%
 				if(userID != null) {
@@ -238,8 +274,10 @@
 	%>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			chatListFunction('ten');
+			getUnread();
+			chatListFunction('0');
 			getInfiniteChat();
+			getInfiniteUnread();
 		});
 	</script>
 </body>

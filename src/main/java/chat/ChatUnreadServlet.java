@@ -1,24 +1,27 @@
-package user;
+package chat;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//사용자한테 중복체크한 결과를 반환
-@WebServlet("/UserRegisterCheckServlet")
-public class UserRegisterCheckServlet extends HttpServlet {
+@WebServlet("/ChatUnreadServlet")
+public class ChatUnreadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
-	//Post 방식으로 클라이언트한테 어떠한 매개변수를 받았을 때 처리
+       
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html;charset=UTF-8");
 		String userID = request.getParameter("userID");
-		if(userID == null || userID.equals("")) response.getWriter().write("-1");
-		response.getWriter().write(new UserDAO().registerCheck(userID) + ""); // 문자열 형태로 출력하기 위한 공백 문자열("")
+		if(userID == null || userID.equals("")) {
+			response.getWriter().write("0");
+		} else {
+			userID = URLDecoder.decode(userID, "UTF-8");
+			response.getWriter().write(new ChatDAO().getAllUnreadChat(userID) + "");
+		}
 	}
-
 }

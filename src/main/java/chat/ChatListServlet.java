@@ -37,7 +37,7 @@ public class ChatListServlet extends HttpServlet {
 		StringBuffer result = new StringBuffer("");
 		result.append("{\"result\":["); //JSON : 어떠한 언어에서도 사용할 수 있는 배열을 표현하고 담을 수 있는 하나의 약속
 		ChatDAO chatDAO = new ChatDAO();
-		ArrayList<ChatDTO> chatList = chatDAO.getChatListByRecent(fromID, toID, 10);
+		ArrayList<ChatDTO> chatList = chatDAO.getChatListByRecent(fromID, toID, 100);
 		if(chatList.size() == 0) return "";
 		for(int i = 0; i < chatList.size(); i++) {
 			result.append("[{\"value\": \"" + chatList.get(i).getFromID() + "\"},");
@@ -47,6 +47,7 @@ public class ChatListServlet extends HttpServlet {
 			if(i != chatList.size() -1) result.append(",");
 		}
 		result.append("], \"last\":\"" + chatList.get(chatList.size() -1).getChatID() + "\"}");
+		chatDAO.readchat(fromID, toID);
 		return result.toString();
 	}
 	
@@ -64,6 +65,7 @@ public class ChatListServlet extends HttpServlet {
 			if(i != chatList.size() -1) result.append(",");
 		}
 		result.append("], \"last\":\"" + chatList.get(chatList.size() -1).getChatID() + "\"}");
+		chatDAO.readchat(fromID, toID);
 		return result.toString();
 	}
 }
