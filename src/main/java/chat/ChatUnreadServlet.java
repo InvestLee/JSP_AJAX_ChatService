@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/ChatUnreadServlet")
 public class ChatUnreadServlet extends HttpServlet {
@@ -21,6 +22,11 @@ public class ChatUnreadServlet extends HttpServlet {
 			response.getWriter().write("0");
 		} else {
 			userID = URLDecoder.decode(userID, "UTF-8");
+			HttpSession session = request.getSession(); //세션 값 검증(본인만 회원정보 수정할 수 있어야 함)
+			if(!URLDecoder.decode(userID, "UTF-8").equals((String) session.getAttribute("userID"))){
+				response.getWriter().write("");
+				return;
+			}
 			response.getWriter().write(new ChatDAO().getAllUnreadChat(userID) + "");
 		}
 	}

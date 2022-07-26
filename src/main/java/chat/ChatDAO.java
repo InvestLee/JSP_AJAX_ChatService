@@ -273,4 +273,33 @@ public class ChatDAO {
 			}
 			return chatList; //리스트 반환
 		}
+		
+		public int getUnreadChat(String fromID, String toID) {
+			Connection conn = null;
+			PreparedStatement pstmt = null; //SQL Injection같은 해킹공격을 방어해주고 안정적으로 SQL문을 실행하게 해줌
+			ResultSet rs = null;
+			String SQL = "SELECT COUNT(chatID) FROM CHAT WHERE fromID = ? AND toID = ? AND chatRead = 0";
+			try {
+				conn = dataSource.getConnection();
+				pstmt = conn.prepareStatement(SQL);
+				pstmt.setString(1, fromID);
+				pstmt.setString(2, toID);
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
+					return rs.getInt("COUNT(chatID)");
+				}
+				return 0;
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(rs != null) rs.close();
+					if(pstmt != null) pstmt.close();
+					if(conn != null) conn.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return -1; //데이터베이스 오류
+		}
 }

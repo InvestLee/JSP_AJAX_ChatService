@@ -122,4 +122,68 @@ public class UserDAO {
 		}
 		return -1; //데이터 베이스 오류가 발생한 경우 
 	}
+	
+	public UserDTO getUser(String userID) {
+		UserDTO user = new UserDTO();
+		Connection conn = null;
+		PreparedStatement pstmt = null; //SQL Injection같은 해킹공격을 방어해주고 안정적으로 SQL문을 실행하게 해줌
+		ResultSet rs = null;
+		String SQL = "SELECT * FROM USER WHERE userID = ?"; //입력받은 그 값을 넣어줌
+		try {
+			//getConnection() : 실질적으로 데이터베이스 Connection pool에 접근하도록 만들어 줌
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				user.setUserID(userID);
+				user.setUserPassword(rs.getString("userPassword"));
+				user.setUserName(rs.getString("userName"));
+				user.setUserAge(rs.getInt("userAge"));
+				user.setUserGender(rs.getString("userGender"));
+				user.setUserEmail(rs.getString("userEmail"));
+				user.setUserProfile(rs.getString("userProfile"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return user; 
+	}
+	
+	public int update(String userID, String userPassword, String userName, String userAge, String userGender, String userEmail) {
+		Connection conn = null;
+		PreparedStatement pstmt = null; //SQL Injection같은 해킹공격을 방어해주고 안정적으로 SQL문을 실행하게 해줌
+		String SQL = "UPDATE USER SET userPassword = ?, userName = ?, userAge = ?, userGender = ?, userEmail = ? WHERE userID = ?"; //입력받은 그 값을 넣어줌
+		try {
+			//getConnection() : 실질적으로 데이터베이스 Connection pool에 접근하도록 만들어 줌
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userPassword);
+			pstmt.setString(2, userName);
+			pstmt.setInt(3, Integer.parseInt(userAge)); //숫자 형태가 아닌 문자 형태가 들어오는 경우 return -1 오류 처리
+			pstmt.setString(4, userGender);
+			pstmt.setString(5, userEmail);
+			pstmt.setString(6, userID);
+			return pstmt.executeUpdate();
+			//rs = pstmt.executeQuery(); executeQuery()는 데이터를 가져올 때 사용 insert랑 맞지 않음
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1; //데이터 베이스 오류가 발생한 경우 
+	}
 }
