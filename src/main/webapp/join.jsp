@@ -70,6 +70,7 @@
 			<ul class="nav navbar-nav">
 				<li><a href="index.jsp">메인</a>
 				<li><a href="find.jsp">이용자 찾기</a></li>
+				<li><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li> <!-- 라벨을 통해 안읽은 메시지 수 표시 -->
 			</ul>
 			<%
 				if(userID == null){

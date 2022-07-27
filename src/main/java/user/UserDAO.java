@@ -186,4 +186,61 @@ public class UserDAO {
 		}
 		return -1; //데이터 베이스 오류가 발생한 경우 
 	}
+	
+	public int profile(String userID, String userProfile) {
+		Connection conn = null;
+		PreparedStatement pstmt = null; //SQL Injection같은 해킹공격을 방어해주고 안정적으로 SQL문을 실행하게 해줌
+		String SQL = "UPDATE USER SET userProfile = ? WHERE userID = ?"; //입력받은 그 값을 넣어줌
+		try {
+			//getConnection() : 실질적으로 데이터베이스 Connection pool에 접근하도록 만들어 줌
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userProfile);
+			pstmt.setString(2, userID);
+			return pstmt.executeUpdate();
+			//rs = pstmt.executeQuery(); executeQuery()는 데이터를 가져올 때 사용 insert랑 맞지 않음
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1; //데이터 베이스 오류가 발생한 경우 
+	}
+	
+	//프로필 사진 경로 가지고 오기
+	public String getProfile(String userID) {
+		Connection conn = null;
+		PreparedStatement pstmt = null; //SQL Injection같은 해킹공격을 방어해주고 안정적으로 SQL문을 실행하게 해줌
+		ResultSet rs = null;
+		String SQL = "SELECT userProfile FROM USER WHERE userID = ?"; //입력받은 그 값을 넣어줌
+		try {
+			//getConnection() : 실질적으로 데이터베이스 Connection pool에 접근하도록 만들어 줌
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				if(rs.getString("userProfile").equals("")) {
+					return "http://localhost:8080/UserChat/images/icon.png";
+				}
+				return "http://localhost:8080/UserChat/upload/" + rs.getString("userProfile");
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "http://localhost:8080/UserChat/images/icon.png"; //데이터 베이스 오류가 발생한 경우 
+	}
 }

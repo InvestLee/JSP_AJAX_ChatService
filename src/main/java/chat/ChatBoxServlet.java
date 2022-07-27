@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import user.UserDAO;
+
 @WebServlet("/ChatBoxServlet")
 public class ChatBoxServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -45,15 +47,22 @@ public class ChatBoxServlet extends HttpServlet {
 		//최근 메시지가 위쪽으로 보이게 역순으로
 		for(int i = chatList.size() - 1; i >= 0; i--) {
 			String unread = "";
+			String userProfile = "";
 			if(userID.equals(chatList.get(i).getToID())) {
 				unread = chatDAO.getUnreadChat(chatList.get(i).getFromID(), userID) + ""; //안읽은 메시지 갯수 카운트
 				if(unread.equals("0")) unread = "";
+			}
+			if(userID.equals(chatList.get(i).getToID())) {
+				userProfile = new UserDAO().getProfile(chatList.get(i).getFromID());
+			} else {
+				userProfile = new UserDAO().getProfile(chatList.get(i).getToID());
 			}
 			result.append("[{\"value\": \"" + chatList.get(i).getFromID() + "\"},");
 			result.append("{\"value\": \"" + chatList.get(i).getToID() + "\"},");
 			result.append("{\"value\": \"" + chatList.get(i).getChatContent() + "\"},");
 			result.append("{\"value\": \"" + chatList.get(i).getChatTime() + "\"},");
-			result.append("{\"value\": \"" + unread + "\"}]"); //안읽은 메시지 갯수 출력
+			result.append("{\"value\": \"" + unread + "\"},"); //안읽은 메시지 갯수 출력
+			result.append("{\"value\": \"" + userProfile + "\"}]"); //
 			if(i != 0) result.append(",");
 		}
 		result.append("], \"last\":\"" + chatList.get(chatList.size() -1).getChatID() + "\"}");

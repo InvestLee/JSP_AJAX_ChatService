@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLDecoder" %>
+<%@ page import="user.UserDAO" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,6 +32,8 @@
 			response.sendRedirect("index.jsp");
 			return;
 		}
+		String fromProfile = new UserDAO().getProfile(userID);
+		String toProfile = new UserDAO().getProfile(toID);
 	%>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -98,10 +101,11 @@
 			});
 		}
 		function addChat(chatName, chatContent, chatTime) {
-			$('#chatList').append('<div class="row">' +
+			if(chatName == "<%= userID %>" + '(Me)') {
+				$('#chatList').append('<div class="row">' +
 					'<div class="col-lg-12">' +
 					'<div class="media">' +
-					'<img class="media-object img-circle" style="width: 30px; height: 30px;" src="images/icon.png" alt="">' +
+					'<img class="media-object img-circle" style="width: 30px; height: 30px;" src="<%= fromProfile %>" alt="">' +
 					'</a>' +
 					'<div class="media-body">' +
 					'<h4 class="media-heading">' +
@@ -118,6 +122,28 @@
 					'</div>' +
 					'</div>' +
 					'<hr>');
+			} else {
+				$('#chatList').append('<div class="row">' +
+						'<div class="col-lg-12">' +
+						'<div class="media">' +
+						'<img class="media-object img-circle" style="width: 30px; height: 30px;" src="<%= toProfile %>" alt="">' +
+						'</a>' +
+						'<div class="media-body">' +
+						'<h4 class="media-heading">' +
+						chatName +
+						'<span class="small pull-right">' + 
+						chatTime +
+						'</span>' +
+						'</h4>' +
+						'<p>' +
+						chatContent +
+						'</p>' +
+						'</div>' +
+						'</div>' +
+						'</div>' +
+						'</div>' +
+						'<hr>');
+			}
 			$('#chatList').scrollTop($('#chatList')[0].scrollHeight); //chatList의 스크롤을 가장 아래쪽으로 내려줌으로써 메시지 올때마다 확인 가능
 		}
 		function getUnread(){
@@ -180,6 +206,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href="update.jsp">회원정보 수정</a></li>
+						<li><a href="profileUpdate.jsp">프로필 수정</a></li>
 						<li><a href="logoutAction.jsp">로그아웃</a></li>
 					</ul>
 				</li>
